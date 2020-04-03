@@ -14,23 +14,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uid", updatable = false, nullable = false)
     private long id;
-    private String name;
+    private String email;
     private String password;
 
     protected User(){}
 
-    public User(String name){
-        this.name = name;
+    public User(String email){
+        this.email = email;
     }
 
-    public User(long id, String name){
-        this.id = id;
-        this.name = name;
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
-    public User(long id, String name, String password){
+    public User(long id, String email){
         this.id = id;
-        this.name = name;
+        this.email = email;
+    }
+
+    public User(long id, String email, String password){
+        this.id = id;
+        this.email = email;
         this.password = password;
     }
 
@@ -41,11 +46,11 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getEmail() {
+        return email;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setEmail(String name) {
+        this.email = name;
     }
 
     public String getPassword() {
@@ -57,6 +62,6 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("User[id=%d, name='%s', password='%s']",id , name, password);
+        return String.format("User[id=%d, email='%s', password='%s']",id , email, password);
     }
 }

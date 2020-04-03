@@ -2,6 +2,7 @@ package at.fhcampuswien.sde.carrentalwebservice.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import java.util.function.Function;
 @Component
 public class JwtTokenService {
     private String secret;
+    private Long expiration;
 
     @Autowired
     public JwtTokenService(@Value("${jwt.secret}") String secret) {
@@ -27,7 +29,7 @@ public class JwtTokenService {
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
+        final Claims claims = this.getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
@@ -46,4 +48,5 @@ public class JwtTokenService {
     public Optional<Boolean> validateToken(String token) {
         return  isTokenNotExpired(token) ? Optional.of(Boolean.TRUE) : Optional.empty();
     }
+
 }
