@@ -1,11 +1,11 @@
 package at.fhcampuswien.sde.carrentalwebservice.model.response;
 
-public class ErrorResponse {
+public class GenericResponse {
 
     private int statusCode;
     private String message;
 
-    public ErrorResponse(int statusCode, String message){
+    public GenericResponse(int statusCode, String message){
         this.statusCode = statusCode;
         this.message = message;
     }

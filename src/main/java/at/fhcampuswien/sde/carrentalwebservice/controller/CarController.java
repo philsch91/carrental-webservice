@@ -35,7 +35,7 @@ public class CarController {
     @PutMapping("/cars/{id}")
     public Car updateCar(@RequestBody Car newCar, @PathVariable Long id){
         return this.repository.findById(id).map(car -> {
-            car.setName(newCar.getName());
+            car.setType(newCar.getType());
             return this.repository.save(car);
         }).orElseGet(() -> {
             newCar.setId(id);

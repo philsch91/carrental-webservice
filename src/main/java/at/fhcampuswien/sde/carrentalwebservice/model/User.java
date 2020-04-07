@@ -1,18 +1,15 @@
 package at.fhcampuswien.sde.carrentalwebservice.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Column;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "user")
 public class User {
 
     @Id
     //@GeneratedValue(strategy = GenerationType.AUTO)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "uid", updatable = false, nullable = false)
+    @Column(name = "UserId", updatable = false, nullable = false)
     private long id;
     private String email;
     private String password;

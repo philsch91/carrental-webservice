@@ -1,22 +1,29 @@
 package at.fhcampuswien.sde.carrentalwebservice.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Car {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "CarId", updatable = false, nullable = false)
     private long id;
-    private String name;
+
+    @Column(name = "Type")
+    private String type;
+
+    @Column(name = "Latitude")
+    private Double latitude;
+
+    @Column(name = "Longitude")
+    private Double longitude;
 
     protected Car(){}
 
-    public Car(long id, String name){
+    public Car(long id, String type){
         this.id = id;
-        this.name = name;
+        this.type = type;
     }
 
     public long getId() {
@@ -27,16 +34,32 @@ public class Car {
         this.id = id;
     }
 
-    public String getName() {
-        return this.name;
+    public String getType() {
+        return this.type;
     }
 
-    public void setName(String name){
-        this.name = name;
+    public void setType(String type){
+        this.type = type;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     @Override
     public String toString() {
-        return String.format("Car[id=%d, name='%s']",id, name);
+        return String.format("Car[id=%d, type='%s']",id, type);
     }
 }

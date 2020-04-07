@@ -27,7 +27,7 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
     public void onApplicationEvent(ApplicationReadyEvent event){
         log.info(event.toString());
         //this.repository.deleteAll();
-        User superuser = new User(1L,"admin");
+        User superuser = new User(1L,"admin@carrental.com");
         String password = this.passwordEncoder.encode("admin");
         superuser.setPassword(password);
         //log.info(superuser.toString());

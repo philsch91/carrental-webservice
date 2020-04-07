@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class AuthenticationForbiddenAdvice {
+public class RegistrationBadRequestAdvice {
     @ResponseBody
-    @ExceptionHandler(AuthenticationForbiddenException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity authenticationForbiddenHandler(AuthenticationForbiddenException ex){
-        GenericResponse response = new GenericResponse(403, ex.getMessage());
+    @ExceptionHandler(RegistrationBadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity badRegistrationHandler(RegistrationBadRequestException ex){
+        GenericResponse response = new GenericResponse(400, ex.getMessage());
 
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
