@@ -2,11 +2,13 @@ package at.fhcampuswien.sde.carrentalwebservice.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
 public class JwtAuthentication implements Authentication {
     private final String token;
+    private UserDetails userDetails;
 
     public JwtAuthentication(String token) {
         this.token = token;
@@ -19,7 +21,7 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public Object getCredentials() {
-        return token;
+        return this.token;
     }
 
     @Override
@@ -27,9 +29,13 @@ public class JwtAuthentication implements Authentication {
         return null;
     }
 
+    public void setPrincipal(UserDetails userDetails) {
+        this.userDetails = userDetails;
+    }
+
     @Override
     public Object getPrincipal() {
-        return null;
+        return this.userDetails;
     }
 
     @Override
