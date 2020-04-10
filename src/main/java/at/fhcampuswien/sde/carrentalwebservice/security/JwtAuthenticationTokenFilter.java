@@ -50,7 +50,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (securityContext.getAuthentication() == null){
+        if (auth == null){
             securityContext.setAuthentication(authentication);
         }
     }
