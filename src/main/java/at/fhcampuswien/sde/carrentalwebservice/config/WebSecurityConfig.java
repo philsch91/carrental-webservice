@@ -100,10 +100,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().frameOptions().sameOrigin().and()
                 //.headers().addHeaderWriter(new StaticHeadersWriter("Access-Control-Allow-Origin","*")).and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/registration").permitAll()
                 .antMatchers("/h2-console/*").permitAll()
-                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterBefore(this.authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);

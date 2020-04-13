@@ -3,6 +3,7 @@ package at.fhcampuswien.sde.carrentalwebservice.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "Car")
 public class Car {
 
     @Id
@@ -43,7 +44,7 @@ public class Car {
     }
 
     public Double getLatitude() {
-        return latitude;
+        return this.latitude;
     }
 
     public void setLatitude(Double latitude) {
@@ -51,7 +52,7 @@ public class Car {
     }
 
     public Double getLongitude() {
-        return longitude;
+        return this.longitude;
     }
 
     public void setLongitude(Double longitude) {
@@ -60,6 +61,6 @@ public class Car {
 
     @Override
     public String toString() {
-        return String.format("Car[id=%d, type='%s']",id, type);
+        return String.format("Car[id=%d, type='%s']", id, type);
     }
 }

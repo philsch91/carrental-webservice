@@ -15,7 +15,7 @@ public class Rental implements Serializable {
     @Column(name = "RentalID", updatable = false, nullable = false)
     private long id;
 
-    @Column(name = "StartDate")
+    @Column(name = "StartDate", nullable = false)
     private Timestamp startDate;
 
     @Column(name = "EndDate")
@@ -25,17 +25,25 @@ public class Rental implements Serializable {
     private BigDecimal price;
 
     @ManyToOne
-    @JoinColumn(name = "UserID")
+    @JoinColumn(name = "UserId", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "CarID")
+    @JoinColumn(name = "CarId", nullable = false)
     private Car car;
 
-    protected Rental(){}
+    public Rental(){}
+
+    public long getId() {
+        return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public Timestamp getStartDate() {
-        return startDate;
+        return this.startDate;
     }
 
     public void setStartDate(Timestamp startDate) {
@@ -43,7 +51,7 @@ public class Rental implements Serializable {
     }
 
     public Timestamp getEndDate() {
-        return endDate;
+        return this.endDate;
     }
 
     public void setEndDate(Timestamp endDate) {
@@ -51,7 +59,7 @@ public class Rental implements Serializable {
     }
 
     public BigDecimal getPrice() {
-        return price;
+        return this.price;
     }
 
     public void setPrice(BigDecimal price) {
@@ -59,7 +67,7 @@ public class Rental implements Serializable {
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     public void setUser(User user) {
@@ -67,7 +75,7 @@ public class Rental implements Serializable {
     }
 
     public Car getCar() {
-        return car;
+        return this.car;
     }
 
     public void setCar(Car car) {

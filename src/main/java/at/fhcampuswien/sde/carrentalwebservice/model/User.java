@@ -3,7 +3,7 @@ package at.fhcampuswien.sde.carrentalwebservice.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "User")
 public class User {
 
     @Id
@@ -44,14 +44,14 @@ public class User {
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
     public void setEmail(String name) {
         this.email = name;
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
     }
     public void setPassword(String password) {
         this.password = password;
@@ -59,6 +59,6 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("User[id=%d, email='%s', password='%s']",id , email, password);
+        return String.format("User[id=%d, email='%s', password='%s']", id, email, password);
     }
 }
