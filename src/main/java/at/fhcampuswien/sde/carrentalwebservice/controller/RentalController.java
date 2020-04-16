@@ -114,7 +114,7 @@ public class RentalController {
     @RequestMapping(value = "/rental", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity saveCar(@RequestBody Booking booking){
+    public ResponseEntity saveRental(@RequestBody Booking booking){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(auth instanceof JwtAuthenticatedProfile)) {
@@ -195,7 +195,7 @@ public class RentalController {
     @RequestMapping(value = "/rental/{id}", method = RequestMethod.PUT,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateCar(@RequestBody Booking booking, @PathVariable Long id){
+    public ResponseEntity updateRental(@RequestBody Booking booking, @PathVariable Long id){
         if (booking.getId() != null && booking.getId() != id) {
             GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Incorrect rental id");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -269,7 +269,7 @@ public class RentalController {
     }
 
     @DeleteMapping("/rental/{id}")
-    public void deleteCar(@PathVariable Long id){
+    public void deleteRental(@PathVariable Long id){
         //TODO: check for super user rights
         //this.repository.deleteById(id);
     }

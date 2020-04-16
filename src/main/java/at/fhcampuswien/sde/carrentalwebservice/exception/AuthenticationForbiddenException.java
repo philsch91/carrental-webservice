@@ -4,6 +4,10 @@ import at.fhcampuswien.sde.carrentalwebservice.model.User;
 
 public class AuthenticationForbiddenException extends RuntimeException {
 
+    public AuthenticationForbiddenException(){
+        super("Incorrect username or password");
+    }
+
     public AuthenticationForbiddenException (String message) {
         super(message);
     }

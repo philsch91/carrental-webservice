@@ -7,6 +7,7 @@ import at.fhcampuswien.sde.carrentalwebservice.model.User;
 import at.fhcampuswien.sde.carrentalwebservice.model.response.GenericResponse;
 import at.fhcampuswien.sde.carrentalwebservice.model.response.JwtTokenResponse;
 import at.fhcampuswien.sde.carrentalwebservice.security.JwtAuthenticationService;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,15 @@ public class AuthenticationController {
     public ResponseEntity authenticateUser(HttpServletResponse response, @RequestBody User user){
         log.info("User authentication: " + user.toString());
 
+        if (user.getEmail() == null || user.getPassword() == null) {
+            throw new AuthenticationForbiddenException();
+        }
+
+        EmailValidator emailValidator = EmailValidator.getInstance();
+        if (!emailValidator.isValid(user.getEmail())) {
+            throw new AuthenticationForbiddenException();
+        }
+
         Optional<User> optUser = this.repository.findOneByEmail(user.getEmail());
         optUser.orElseThrow(() -> new AuthenticationForbiddenException(user));
 
@@ -79,6 +89,11 @@ public class AuthenticationController {
         } */
 
         Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            GenericResponse responseBody = new GenericResponse(HttpStatus.BAD_REQUEST.value(), "Token not found");
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {

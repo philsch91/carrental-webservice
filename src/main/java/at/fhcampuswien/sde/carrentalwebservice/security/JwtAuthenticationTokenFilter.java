@@ -42,12 +42,16 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             //log.info("requestHeader != null");
             String authToken = requestHeader.substring(7);
             JwtAuthentication authentication = new JwtAuthentication(authToken);
-            //SecurityContextHolder.getContext().setAuthentication(authentication);
+
             this.updateSecurityContextAuthentication(authentication);
         } */
 
         String authToken = null;
         Cookie[] cookies = request.getCookies();
+
+        if (cookies == null) {
+            return;
+        }
 
         for (Cookie cookie : cookies) {
             log.info(cookie.getName());
