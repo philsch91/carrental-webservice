@@ -4,6 +4,7 @@ import at.fhcampuswien.sde.carrentalwebservice.data.UserRepository;
 import at.fhcampuswien.sde.carrentalwebservice.exception.AuthenticationForbiddenException;
 import at.fhcampuswien.sde.carrentalwebservice.model.User;
 
+import at.fhcampuswien.sde.carrentalwebservice.model.response.GenericResponse;
 import at.fhcampuswien.sde.carrentalwebservice.model.response.JwtTokenResponse;
 import at.fhcampuswien.sde.carrentalwebservice.security.JwtAuthenticationService;
 import org.slf4j.Logger;
@@ -13,6 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +42,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/auth", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JwtTokenResponse> authenticateUser(@RequestBody User user){
+    public ResponseEntity authenticateUser(HttpServletResponse response, @RequestBody User user){
         log.info("User authentication: " + user.toString());
 
         Optional<User> optUser = this.repository.findOneByEmail(user.getEmail());
@@ -45,7 +51,52 @@ public class AuthenticationController {
         User savedUser = optUser.get();
         log.info("User: " + savedUser.toString());
 
-        return new ResponseEntity<>(authenticationService.generateJwtToken(savedUser.getEmail(), user.getPassword()), HttpStatus.OK);
+        String token = authenticationService.generateJwtToken(savedUser.getEmail(), user.getPassword());
+
+        log.info("token: " + token);
+
+        Cookie tokenCookie = new Cookie("token", token);
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setSecure(true);
+
+        response.addCookie(tokenCookie);
+        JwtTokenResponse tokenResponse = new JwtTokenResponse(token);
+
+        return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        log.info("logout");
+
+        String authToken = null;
+
+        /*
+        String requestHeader = request.getHeader("Authorization");
+        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+            authToken = requestHeader.substring(7);
+        } */
+
+        Cookie[] cookies = request.getCookies();
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                log.info("token: " + cookie.getValue());
+                authToken = cookie.getValue();
+                cookie.setValue("");
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+        }
+
+        if (authToken == null) {
+            GenericResponse responseBody = new GenericResponse(HttpStatus.BAD_REQUEST.value(), "Token not found");
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
+
+        GenericResponse responseBody = new GenericResponse(HttpStatus.OK.value(), "Logout successful");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
 }

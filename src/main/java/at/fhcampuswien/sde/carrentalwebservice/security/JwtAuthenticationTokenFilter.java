@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,6 +30,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         log.info(securityContext.toString());
 
+        this.authenticateToken(request, response);
+        filterChain.doFilter(request, response);
+    }
+
+    protected void authenticateToken(HttpServletRequest request, HttpServletResponse response) {
+        /*
         final String requestHeader = request.getHeader(this.tokenHeader);
 
         if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
@@ -37,9 +44,24 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             JwtAuthentication authentication = new JwtAuthentication(authToken);
             //SecurityContextHolder.getContext().setAuthentication(authentication);
             this.updateSecurityContextAuthentication(authentication);
+        } */
+
+        String authToken = null;
+        Cookie[] cookies = request.getCookies();
+
+        for (Cookie cookie : cookies) {
+            log.info(cookie.getName());
+            if (cookie.getName().equals("token")) {
+                authToken = cookie.getValue();
+            }
         }
 
-        filterChain.doFilter(request, response);
+        if (authToken == null) {
+            return;
+        }
+
+        JwtAuthentication authentication = new JwtAuthentication(authToken);
+        this.updateSecurityContextAuthentication(authentication);
     }
 
     protected void updateSecurityContextAuthentication(Authentication authentication){

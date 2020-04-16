@@ -20,7 +20,7 @@ public class Car {
     @Column(name = "Longitude")
     private Double longitude;
 
-    protected Car(){}
+    public Car(){}
 
     public Car(long id, String type){
         this.id = id;
