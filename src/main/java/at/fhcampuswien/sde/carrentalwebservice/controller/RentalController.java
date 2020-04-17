@@ -1,5 +1,6 @@
 package at.fhcampuswien.sde.carrentalwebservice.controller;
 
+import at.fhcampuswien.sde.carrentalwebservice.data.CarFactory;
 import at.fhcampuswien.sde.carrentalwebservice.data.CarRepository;
 import at.fhcampuswien.sde.carrentalwebservice.data.RentalRepository;
 import at.fhcampuswien.sde.carrentalwebservice.data.UserRepository;
@@ -91,13 +92,13 @@ public class RentalController {
         }
 
         User user = optUser.get();
-        List<Rental> rentals = this.repository.findByUser(user);
+        List<Rental> userRentalList = this.repository.findByUser(user);
 
         Rental rental = null;
 
-        for (Rental r : rentals) {
-            if (r.getId() == id.longValue()) {
-                rental = r;
+        for (Rental userRental : userRentalList) {
+            if (userRental.getId() == id.longValue()) {
+                rental = userRental;
             }
         }
 
@@ -210,8 +211,8 @@ public class RentalController {
         }
 
         JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-
         String userEmail = authenticatedProfile.getName();
+
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
         if (!optUser.isPresent()){
@@ -262,6 +263,22 @@ public class RentalController {
 
         //TODO: calculate costs
 
+        //update car location
+
+        List<Car> exceptionCarList = this.carRepository.findAll();
+
+        //CarController carController = new CarController(this.carRepository, this.repository);
+        //List<Car> exceptionCarList = carController.getAllCars();
+
+        CarFactory carFactory = new CarFactory();
+        Car newCar = carFactory.buildNewRandomCar(exceptionCarList);
+
+        Car rentalCar = rental.getCar();
+        rentalCar.setLatitude(newCar.getLatitude());
+        rentalCar.setLongitude(newCar.getLongitude());
+
+        this.carRepository.save(rentalCar);
+
         //return new ResponseEntity<>(rental, HttpStatus.OK);
         Booking bookingResponse = this.convertRentalToBooking(rental);
 
@@ -288,6 +305,8 @@ public class RentalController {
             Timestamp endDate = rental.getEndDate();
             booking.setEndTime(endDate.getTime() / 1000);
         }
+
+        booking.setPrice(rental.getPrice());
 
         return booking;
     }

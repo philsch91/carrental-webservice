@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
+import at.fhcampuswien.sde.carrentalwebservice.data.CarFactory;
 import at.fhcampuswien.sde.carrentalwebservice.data.CarRepository;
 import at.fhcampuswien.sde.carrentalwebservice.data.RentalRepository;
 import at.fhcampuswien.sde.carrentalwebservice.exception.CarNotFoundException;
@@ -38,12 +39,18 @@ public class CarController {
         List<Car> availableCarList = new Vector<Car>();
 
         for (Car car : carList) {
-            boolean isCarAvailable = checkForCarBooking(car);
+            boolean isCarAvailable = this.checkForCarBooking(car);
 
             if (isCarAvailable) {
                 availableCarList.add(car);
             }
         }
+
+
+        CarFactory carFactory = new CarFactory();
+        availableCarList = carFactory.randomUpdateCarLocations(availableCarList);
+
+        availableCarList = this.repository.saveAll(availableCarList);
 
         return availableCarList;
     }
@@ -58,7 +65,7 @@ public class CarController {
 
         Car car = optionalCar.get();
 
-        boolean isCarAvailable = checkForCarBooking(car);
+        boolean isCarAvailable = this.checkForCarBooking(car);
 
         if (!isCarAvailable) {
             GenericResponse response = new GenericResponse(HttpStatus.OK.value(), "Car is not available");
