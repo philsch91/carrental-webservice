@@ -37,6 +37,7 @@ public class AuthenticationController {
 
     @GetMapping("/auth")
     public List<User> getAllUsers(){
+        //TODO: check user role
         return this.repository.findAll();
     }
 
@@ -44,7 +45,7 @@ public class AuthenticationController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity authenticateUser(HttpServletResponse response, @RequestBody User user){
-        log.info("User authentication: " + user.toString());
+        log.info("authenticateUser: " + user.toString());
 
         if (user.getEmail() == null || user.getPassword() == null) {
             throw new AuthenticationForbiddenException();
@@ -61,15 +62,15 @@ public class AuthenticationController {
         User savedUser = optUser.get();
         log.info("User: " + savedUser.toString());
 
-        String token = authenticationService.generateJwtToken(savedUser.getEmail(), user.getPassword());
+        String token = this.authenticationService.generateJwtToken(savedUser.getEmail(), user.getPassword());
 
         log.info("token: " + token);
 
-        Cookie tokenCookie = new Cookie("token", token);
-        tokenCookie.setHttpOnly(true);
-        tokenCookie.setSecure(true);
+        //Cookie tokenCookie = new Cookie("token", token);
+        //tokenCookie.setHttpOnly(true);
+        //tokenCookie.setSecure(true);
 
-        response.addCookie(tokenCookie);
+        //response.addCookie(tokenCookie);
         JwtTokenResponse tokenResponse = new JwtTokenResponse(token);
 
         return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
@@ -78,16 +79,19 @@ public class AuthenticationController {
     @RequestMapping(value = "/logout", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity logoutUser(HttpServletRequest request, HttpServletResponse response) {
-        log.info("logout");
+        log.info("logoutUser");
 
         String authToken = null;
+        String authorizationHeader = request.getHeader("Authorization");
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            GenericResponse responseBody = new GenericResponse(HttpStatus.BAD_REQUEST.value(), "Token not found");
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
+
+        authToken = authorizationHeader.substring(7);
 
         /*
-        String requestHeader = request.getHeader("Authorization");
-        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
-            authToken = requestHeader.substring(7);
-        } */
-
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
@@ -104,11 +108,14 @@ public class AuthenticationController {
                 response.addCookie(cookie);
             }
         }
+        */
 
         if (authToken == null) {
             GenericResponse responseBody = new GenericResponse(HttpStatus.BAD_REQUEST.value(), "Token not found");
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         }
+
+        //TODO: save token in blacklist
 
         GenericResponse responseBody = new GenericResponse(HttpStatus.OK.value(), "Logout successful");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);

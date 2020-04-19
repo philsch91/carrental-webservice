@@ -55,8 +55,8 @@ public class RentalController {
         log.info(auth.getPrincipal().toString());
 
         JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-
         String userEmail = authenticatedProfile.getName();
+
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
         if (!optUser.isPresent()){
@@ -83,8 +83,8 @@ public class RentalController {
         }
 
         JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-
         String userEmail = authenticatedProfile.getName();
+
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
         if (!optUser.isPresent()){
@@ -125,8 +125,8 @@ public class RentalController {
         }
 
         JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-
         String userEmail = authenticatedProfile.getName();
+
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
         if (!optUser.isPresent()) {
@@ -174,6 +174,8 @@ public class RentalController {
 
         Timestamp startDate = new Timestamp(unixTimestamp * 1000);
 
+        //save rental
+
         Rental rental = new Rental();
         rental.setStartDate(startDate);
         rental.setUser(user);
@@ -185,6 +187,8 @@ public class RentalController {
             GenericResponse response = new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Car already booked");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        //return booking
 
         //GenericResponse response = new GenericResponse(200, "Booking successful");
         Booking bookingResponse = this.convertRentalToBooking(savedRental);
@@ -256,12 +260,12 @@ public class RentalController {
             unixTimestamp = booking.getEndTime();
         }
 
+        //set end date and price
+
         Timestamp endDate = new Timestamp(unixTimestamp * 1000);
         rental.setEndDate(endDate);
 
         rental = this.repository.save(rental);
-
-        //TODO: calculate costs
 
         //update car location
 
@@ -279,6 +283,8 @@ public class RentalController {
 
         this.carRepository.save(rentalCar);
 
+        //return booking
+
         //return new ResponseEntity<>(rental, HttpStatus.OK);
         Booking bookingResponse = this.convertRentalToBooking(rental);
 
@@ -286,9 +292,12 @@ public class RentalController {
     }
 
     @DeleteMapping("/rental/{id}")
-    public void deleteRental(@PathVariable Long id){
-        //TODO: check for super user rights
+    public ResponseEntity deleteRental(@PathVariable Long id){
+        //TODO: check for user roles
         //this.repository.deleteById(id);
+
+        GenericResponse response = new GenericResponse(HttpStatus.NOT_FOUND.value(), "Not found");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     protected Booking convertRentalToBooking(Rental rental) {

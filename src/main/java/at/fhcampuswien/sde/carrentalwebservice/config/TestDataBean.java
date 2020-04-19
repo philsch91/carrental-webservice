@@ -1,6 +1,7 @@
 package at.fhcampuswien.sde.carrentalwebservice.config;
 
 import at.fhcampuswien.sde.carrentalwebservice.data.CarFactory;
+import at.fhcampuswien.sde.carrentalwebservice.model.CarType;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.CommandLineRunner;
@@ -30,6 +31,7 @@ public class TestDataBean {
 
             int index = 0;
             long id = 1L;
+
             while (index < (carList.size()/4)*3) {
                 Car car = carList.get(index);
                 car.setId(id);
@@ -58,7 +60,7 @@ public class TestDataBean {
 			repository.findByType("Car2").forEach(car2 -> {
 				log.info(car2.toString());
 			}); */
-            for (Car c : repository.findByType("Car2")) {
+            for (Car c : repository.findByType(CarType.SMALL)) {
                 log.info(c.toString());
             }
             log.info("");

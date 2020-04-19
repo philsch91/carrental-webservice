@@ -1,6 +1,7 @@
 package at.fhcampuswien.sde.carrentalwebservice;
 
 import at.fhcampuswien.sde.carrentalwebservice.data.UserRepository;
+import at.fhcampuswien.sde.carrentalwebservice.model.Currency;
 import at.fhcampuswien.sde.carrentalwebservice.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
         User superuser = new User(1L,"admin@carrental.com");
         String password = this.passwordEncoder.encode("admin");
         superuser.setPassword(password);
+        superuser.setDefaultCurrency(Currency.USD);
         //log.info(superuser.toString());
 
         this.repository.saveAndFlush(superuser);

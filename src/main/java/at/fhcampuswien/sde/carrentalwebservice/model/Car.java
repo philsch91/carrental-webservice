@@ -13,7 +13,7 @@ public class Car {
     private long id;
 
     @Column(name = "Type")
-    private String type;
+    private CarType type;
 
     @Column(name = "Latitude")
     private Double latitude;
@@ -23,7 +23,7 @@ public class Car {
 
     public Car(){}
 
-    public Car(long id, String type){
+    public Car(long id, CarType type){
         this.id = id;
         this.type = type;
     }
@@ -36,11 +36,11 @@ public class Car {
         this.id = id;
     }
 
-    public String getType() {
+    public CarType getType() {
         return this.type;
     }
 
-    public void setType(String type){
+    public void setType(CarType type){
         this.type = type;
     }
 
@@ -70,7 +70,7 @@ public class Car {
         if (!(o instanceof Car)) return false;
         Car car = (Car) o;
 
-        if (this.id == 0 && car.id != 0) {
+        if ((this.id == 0 && car.id != 0) || (this.id != 0 && car.id == 0)) {
             return Objects.equals(type, car.type) &&
                     Objects.equals(latitude, car.latitude) &&
                     Objects.equals(longitude, car.longitude);
@@ -89,6 +89,6 @@ public class Car {
 
     @Override
     public String toString() {
-        return String.format("Car[id=%d, type='%s']", id, type);
+        return String.format("Car[id=%d, type='%s']", id, type.name());
     }
 }
