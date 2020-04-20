@@ -2,6 +2,7 @@ package at.fhcampuswien.sde.carrentalwebservice.controller;
 
 import at.fhcampuswien.sde.carrentalwebservice.data.UserRepository;
 import at.fhcampuswien.sde.carrentalwebservice.exception.RegistrationBadRequestException;
+import at.fhcampuswien.sde.carrentalwebservice.logic.Constants;
 import at.fhcampuswien.sde.carrentalwebservice.model.User;
 import at.fhcampuswien.sde.carrentalwebservice.model.response.GenericResponse;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -30,27 +31,36 @@ public class RegistrationController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GenericResponse> registerUser(@RequestBody User user){
-        log.info("User registration: " + user.toString());
+        log.info("registerUser: " + user.toString());
 
         if (user.getEmail() == null || user.getPassword() == null) {
             throw new RegistrationBadRequestException();
         }
 
         EmailValidator emailValidator = EmailValidator.getInstance();
+
         if (!emailValidator.isValid(user.getEmail())) {
             throw new RegistrationBadRequestException();
         }
 
         Optional<User> optUser = this.repository.findOneByEmail(user.getEmail());
+
         if (optUser.isPresent()){
-            GenericResponse response = new GenericResponse(409,"User already registered");
+            GenericResponse response = new GenericResponse(409, "User already registered");
             return new ResponseEntity<>(response,HttpStatus.CONFLICT);
         }
 
         RegexValidator validator = new RegexValidator("((?=.*[a-z])(?=.*\\d)(?=.*[@#$%])(?=.*[A-Z]).{6,16})");
-        if(!validator.isValid(user.getPassword())){
+
+        if (!validator.isValid(user.getPassword())){
             throw new RegistrationBadRequestException();
         }
+
+        if (user.getDefaultCurrency() == null) {
+            user.setDefaultCurrency(Constants.SERVICE_CURRENCY);
+        }
+
+        user.setId(null);
 
         this.repository.saveUser(user);
 

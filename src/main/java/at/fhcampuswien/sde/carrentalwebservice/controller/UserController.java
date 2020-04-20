@@ -21,7 +21,7 @@ import java.util.Optional;
 @RestController
 public class UserController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserRepository repository;
 
     public UserController(UserRepository repository) {
@@ -43,7 +43,7 @@ public class UserController {
 
         Optional<User> optUser = this.repository.findOneByEmail(userEmail);
 
-        if (!optUser.isPresent()){
+        if (!optUser.isPresent()) {
             GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Invalid user");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
@@ -76,12 +76,21 @@ public class UserController {
 
         Optional<User> optUser = this.repository.findOneByEmail(userEmail);
 
-        if (!optUser.isPresent()){
+        if (!optUser.isPresent()) {
             GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Invalid user");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         User user = optUser.get();
+        User userCopy = null;
+
+        try {
+            userCopy = (User) user.clone();
+        } catch (CloneNotSupportedException ex) {
+            log.info(ex.getMessage());
+        }
+
+        //change user settings
 
         if (userInfo.getDefaultCurrency() != null) {
             String currency = userInfo.getDefaultCurrency();
@@ -96,7 +105,21 @@ public class UserController {
             user.setDefaultCurrency(newDefaultCurrency);
         }
 
-        this.repository.saveAndFlush(user);
+        //save user settings
+
+        user = this.repository.saveAndFlush(user);
+
+        //validate changes
+
+        if (userCopy == null) {
+            GenericResponse response = new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"User update failed");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (userCopy.equals(user)) {
+            GenericResponse response = new GenericResponse(HttpStatus.OK.value(),"User settings not changed");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
         GenericResponse response = new GenericResponse(HttpStatus.OK.value(),"User settings updated");
         return new ResponseEntity<>(response, HttpStatus.OK);

@@ -64,6 +64,7 @@ public class RentalController {
         }
 
         User user = optUser.get();
+
         List<Rental> rentals = this.repository.findByUser(user);
         List<Booking> bookings = new Vector<Booking>();
 
@@ -92,8 +93,8 @@ public class RentalController {
         }
 
         User user = optUser.get();
-        List<Rental> userRentalList = this.repository.findByUser(user);
 
+        List<Rental> userRentalList = this.repository.findByUser(user);
         Rental rental = null;
 
         for (Rental userRental : userRentalList) {
@@ -219,7 +220,7 @@ public class RentalController {
 
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
-        if (!optUser.isPresent()){
+        if (!optUser.isPresent()) {
             GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Invalid user");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
