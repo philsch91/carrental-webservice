@@ -60,7 +60,7 @@ public class RegistrationController {
             user.setDefaultCurrency(Constants.SERVICE_CURRENCY);
         }
 
-        user.setId(null);
+        user.setId(0L);
 
         this.repository.saveUser(user);
 

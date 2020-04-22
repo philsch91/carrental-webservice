@@ -10,15 +10,12 @@ import at.fhcampuswien.sde.carrentalwebservice.model.Rental;
 import at.fhcampuswien.sde.carrentalwebservice.model.User;
 import at.fhcampuswien.sde.carrentalwebservice.model.dto.Booking;
 import at.fhcampuswien.sde.carrentalwebservice.model.response.GenericResponse;
-import at.fhcampuswien.sde.carrentalwebservice.security.JwtAuthenticatedProfile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -28,7 +25,7 @@ import java.util.Optional;
 import java.util.Vector;
 
 @RestController
-public class RentalController {
+public class RentalController extends BaseRestController {
 
     private final RentalRepository repository;
     private final UserRepository userRepository;
@@ -43,6 +40,7 @@ public class RentalController {
 
     @GetMapping("/rental")
     public List<Booking> getAllRentals(){
+        /*
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (!(auth instanceof JwtAuthenticatedProfile)) {
@@ -55,7 +53,9 @@ public class RentalController {
         log.info(auth.getPrincipal().toString());
 
         JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-        String userEmail = authenticatedProfile.getName();
+        */
+
+        String userEmail = super.getAuthentication().getName();
 
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
@@ -77,14 +77,7 @@ public class RentalController {
 
     @GetMapping("/rental/{id}")
     public ResponseEntity getRental(@PathVariable Long id){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (!(auth instanceof JwtAuthenticatedProfile)) {
-            throw new AuthenticationForbiddenException("authentication failure");
-        }
-
-        JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-        String userEmail = authenticatedProfile.getName();
+        String userEmail = super.getAuthentication().getName();
 
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
@@ -117,16 +110,7 @@ public class RentalController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity saveRental(@RequestBody Booking booking){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (!(auth instanceof JwtAuthenticatedProfile)) {
-            //throw new AuthenticationForbiddenException("authentication failure");
-            GenericResponse response = new GenericResponse(HttpStatus.FORBIDDEN.value(),"Authentication failure");
-            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-        }
-
-        JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-        String userEmail = authenticatedProfile.getName();
+        String userEmail = super.getAuthentication().getName();
 
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
@@ -207,16 +191,7 @@ public class RentalController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (!(auth instanceof JwtAuthenticatedProfile)) {
-            //throw new AuthenticationForbiddenException("authentication failure");
-            GenericResponse response = new GenericResponse(HttpStatus.FORBIDDEN.value(),"Authentication failure");
-            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-        }
-
-        JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-        String userEmail = authenticatedProfile.getName();
+        String userEmail = super.getAuthentication().getName();
 
         Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
 
@@ -236,10 +211,7 @@ public class RentalController {
 
         Rental rental = optionalRental.get();
 
-        if (rental.getEndDate() != null) {
-            GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Rental already ended");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
+        //compare user with rental user
 
         User rentalUser = rental.getUser();
 
@@ -249,6 +221,13 @@ public class RentalController {
         if (user.getId() != rentalUser.getId()) {
             GenericResponse response = new GenericResponse(HttpStatus.UNAUTHORIZED.value(),"Unauthorized");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        //check rental endDate
+
+        if (rental.getEndDate() != null) {
+            GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Rental already ended");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         long unixTimestamp = Instant.now().getEpochSecond();

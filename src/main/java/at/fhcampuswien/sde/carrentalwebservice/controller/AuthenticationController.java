@@ -35,12 +35,6 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @GetMapping("/auth")
-    public List<User> getAllUsers(){
-        //TODO: check user role
-        return this.repository.findAll();
-    }
-
     @RequestMapping(value = "/auth", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,6 +46,7 @@ public class AuthenticationController {
         }
 
         EmailValidator emailValidator = EmailValidator.getInstance();
+
         if (!emailValidator.isValid(user.getEmail())) {
             throw new AuthenticationForbiddenException();
         }

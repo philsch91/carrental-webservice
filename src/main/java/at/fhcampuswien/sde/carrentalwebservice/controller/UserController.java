@@ -16,10 +16,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-public class UserController {
+public class UserController extends BaseRestController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserRepository repository;
@@ -28,18 +29,16 @@ public class UserController {
         this.repository = repository;
     }
 
+    @GetMapping("/users")
+    public List<User> getAllUsers(){
+        //TODO: implement user roles
+        return this.repository.findAll();
+    }
+
     @RequestMapping(value = "/user", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (!(auth instanceof JwtAuthenticatedProfile)) {
-            GenericResponse response = new GenericResponse(HttpStatus.FORBIDDEN.value(),"Authentication failure");
-            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-        }
-
-        JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-        String userEmail = authenticatedProfile.getName();
+        String userEmail = super.getAuthentication().getName();
 
         Optional<User> optUser = this.repository.findOneByEmail(userEmail);
 
@@ -64,15 +63,7 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (!(auth instanceof JwtAuthenticatedProfile)) {
-            GenericResponse response = new GenericResponse(HttpStatus.FORBIDDEN.value(),"Authentication failure");
-            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-        }
-
-        JwtAuthenticatedProfile authenticatedProfile = (JwtAuthenticatedProfile) auth;
-        String userEmail = authenticatedProfile.getName();
+        String userEmail = super.getAuthentication().getName();
 
         Optional<User> optUser = this.repository.findOneByEmail(userEmail);
 
