@@ -2,19 +2,19 @@ package at.fhcampuswien.sde.carrentalwebservice.model.response;
 
 public class GenericResponse {
 
-    private int statusCode;
+    private int status;
     private String message;
 
-    public GenericResponse(int statusCode, String message){
-        this.statusCode = statusCode;
+    public GenericResponse(int status, String message){
+        this.status = status;
         this.message = message;
     }
 
-    public int getStatusCode() {
-        return this.statusCode;
+    public int getStatus() {
+        return this.status;
     }
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getMessage() {
