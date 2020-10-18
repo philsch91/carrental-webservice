@@ -39,7 +39,7 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
             return;
         }
 
-        superuser = new User(id, "admin@carrental.com");
+        superuser = new User(id, "admin@service.com");
         String password = this.passwordEncoder.encode("admin");
         superuser.setPassword(password);
         superuser.setDefaultCurrency(Constants.SERVICE_CURRENCY);

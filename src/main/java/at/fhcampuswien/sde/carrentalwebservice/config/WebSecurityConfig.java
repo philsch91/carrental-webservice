@@ -101,10 +101,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().frameOptions().sameOrigin().and()
                 //.headers().addHeaderWriter(new StaticHeadersWriter("Access-Control-Allow-Origin","*")).and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                //.antMatchers(HttpMethod.OPTIONS).permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                //.antMatchers("/users/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/user").permitAll()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/registration").permitAll()
-                .antMatchers("/h2-console/*").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/swagger-ui**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/v2/api-docs/**").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterBefore(this.authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);

@@ -20,12 +20,22 @@ public class UserDataBean {
     public CommandLineRunner initUser(UserRepository repository) {
         return (args) -> {
             /*
-            User superuser = new User(1L,"admin");
+            long id = 1L;
+
+            User superuser = this.repository.findById(id);
+
+            if (superuser != null) {
+                log.info("superuser found: " + superuser.toString());
+                return;
+            }
+            superuser = new User(id, "admin@service.com");
             superuser.setPassword("admin");
             //log.info(superuser.toString());
-            repository.saveAndFlush(superuser); */
+            repository.saveAndFlush(superuser);
+            */
 
             //repository.saveAndFlush(new User(10L,"admin","admin"));
+
             /*
             User user = repository.findById(1L);
             log.info("User found with findById(1L):");
@@ -33,11 +43,12 @@ public class UserDataBean {
             log.info(user.toString());
             log.info("");
 
-            Optional<User> user2 = repository.findOneByEmail("admin");
+            Optional<User> user2 = repository.findOneByEmail("admin@service.com");
             log.info("User found with findByEmail('admin'):");
             log.info("--------------------------------");
             log.info(user2.toString());
-            log.info(""); */
+            log.info("");
+            */
         };
     }
 }

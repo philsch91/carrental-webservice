@@ -27,10 +27,10 @@ import java.util.Vector;
 @RestController
 public class RentalController extends BaseRestController {
 
+    private static final Logger log = LoggerFactory.getLogger(RentalController.class);
     private final RentalRepository repository;
     private final UserRepository userRepository;
     private final CarRepository carRepository;
-    private static final Logger log = LoggerFactory.getLogger(RentalController.class);
 
     public RentalController(RentalRepository repository, UserRepository userRepository, CarRepository carRepository){
         this.repository = repository;
@@ -272,12 +272,39 @@ public class RentalController extends BaseRestController {
     }
 
     @DeleteMapping("/rental/{id}")
-    public ResponseEntity deleteRental(@PathVariable Long id){
-        //TODO: check for user roles
-        //this.repository.deleteById(id);
+    public ResponseEntity deleteRental(@PathVariable Long id) {
+        String userEmail = super.getAuthentication().getName();
 
-        GenericResponse response = new GenericResponse(HttpStatus.NOT_FOUND.value(), "Not found");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        Optional<User> optUser = this.userRepository.findOneByEmail(userEmail);
+
+        if (!optUser.isPresent()) {
+            GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Invalid user");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        User user = optUser.get();
+
+        //TODO: implement user roles
+
+        long userId = user.getId();
+        String email = user.getEmail();
+
+        if (userId != 1L && !email.equals("admin@service.com")) {
+            GenericResponse response = new GenericResponse(HttpStatus.FORBIDDEN.value(),"Request forbidden");
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+
+        Optional<Rental> optionalRental = this.repository.findById(id);
+
+        if (!optionalRental.isPresent()) {
+            GenericResponse response = new GenericResponse(HttpStatus.NOT_FOUND.value(), "Rental " + id.toString() + " not found");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        this.repository.deleteById(id);
+
+        GenericResponse response = new GenericResponse(HttpStatus.OK.value(),"Rental " + id.toString() + " deleted");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     protected Booking convertRentalToBooking(Rental rental) {

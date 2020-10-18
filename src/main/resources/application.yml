@@ -1,0 +1,39 @@
+server:
+  #application:
+  #  name: user-service
+  port: 443
+  forward-headers-strategy: FRAMEWORK
+  ssl:
+    key-store: classpath:se-carrental.p12
+    key-store-password: carrental
+    key-store-type: PKCS12
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    #url: jdbc:h2:mem:database
+    url: jdbc:h2:file:./database.h2
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      # use "create" or "create-drop" when you wish to recreate database on restart
+      # use "update" or "validate" when data is to be kept
+      ddl-auto: update
+      #dialect: org.hibernate.dialect.SQLServer2012Dialect
+    properties:
+      hibernate.format_sql: true
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+jwt:
+  header: Authorization
+  secret: 3ef572f7769d78d
+  expiration: 7200
+allow:
+  origin: "*"
