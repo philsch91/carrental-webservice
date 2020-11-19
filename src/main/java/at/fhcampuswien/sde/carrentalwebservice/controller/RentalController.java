@@ -186,8 +186,8 @@ public class RentalController extends BaseRestController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateRental(@RequestBody Booking booking, @PathVariable Long id){
-        if (booking.getId() != null && booking.getId() != id) {
-            GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Incorrect rental id");
+        if (booking.getId() != null && !booking.getId().equals(id)) {
+            GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(), "Incorrect rental id");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -221,6 +221,13 @@ public class RentalController extends BaseRestController {
         if (user.getId() != rentalUser.getId()) {
             GenericResponse response = new GenericResponse(HttpStatus.UNAUTHORIZED.value(),"Unauthorized");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        //compare car id in the booking with car id for the saved rental
+
+        if (booking.getCarId() != null && booking.getCarId().longValue() != rental.getCar().getId()) {
+            GenericResponse response = new GenericResponse(HttpStatus.BAD_REQUEST.value(),"Invalid car id");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         //check rental endDate
