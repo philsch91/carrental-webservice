@@ -2,7 +2,7 @@
 
 ## Compile
 
-1. `mvn package`
+1. `mvn clean package`
 
 ## Run
 
@@ -11,7 +11,12 @@
 ## Build and Run Container
 
 1. `docker build -t ps/carrental-webservice .`
-2. `docker run -p 443:443 ps/carrental-webservice`
+2. `docker run --name carrental-webservice -p 443:443 ps/carrental-webservice`
+
+## Start and Stop Container
+
+1. `docker start ps/carrental-webservice`
+2. `docker stop ps/carrental-webservice`
 
 ## Push Container
 
